@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import axios from 'axios';
-import { Download, Link as LinkIcon, Palette, Image as ImageIcon, Circle, Square, ExternalLink } from 'lucide-react';
+import { Download, Link as LinkIcon, Palette, Image as ImageIcon, Circle, Square, ExternalLink, Phone, MessageCircle } from 'lucide-react';
 import personalQR from '../assets/personal-qr.png';
 
 const processImageToShape = (imageSrc, shape) => {
@@ -35,6 +35,8 @@ const processImageToShape = (imageSrc, shape) => {
 
 export default function Home() {
   const [url, setUrl] = useState('https://example.com');
+  const [inputType, setInputType] = useState('url');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [fgColor, setFgColor] = useState('#ffffff');
   const [bgColor, setBgColor] = useState('#0d0f12');
   
@@ -79,13 +81,17 @@ export default function Home() {
     if (canvasContainer) {
       const canvas = canvasContainer.querySelector('canvas');
       if (canvas) {
-        const image = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = 'custom-qr-code.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = 'custom-qr-code.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+        }, 'image/png');
       }
     }
   };
@@ -99,13 +105,71 @@ export default function Home() {
         <div className="generator-layout">
           <div className="customization-panel">
             <div className="input-group">
-              <label><LinkIcon size={16} style={{display:'inline', marginRight:'8px'}}/> Destination URL</label>
-              <input 
-                type="text" 
-                value={url} 
-                onChange={(e) => setUrl(e.target.value)} 
-                placeholder="https://"
-              />
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                <button 
+                  className={`btn ${inputType === 'url' ? '' : 'btn-secondary'}`} 
+                  onClick={() => setInputType('url')}
+                  style={{ flex: 1, padding: '0.5rem', minWidth: '80px' }}
+                >
+                  <LinkIcon size={16} style={{marginRight: '8px'}} /> URL
+                </button>
+                <button 
+                  className={`btn ${inputType === 'phone' ? '' : 'btn-secondary'}`} 
+                  onClick={() => setInputType('phone')}
+                  style={{ flex: 1, padding: '0.5rem', minWidth: '100px' }}
+                >
+                  <Phone size={16} style={{marginRight: '8px'}} /> Phone Call
+                </button>
+                <button 
+                  className={`btn ${inputType === 'whatsapp' ? '' : 'btn-secondary'}`} 
+                  onClick={() => setInputType('whatsapp')}
+                  style={{ flex: 1, padding: '0.5rem', minWidth: '100px' }}
+                >
+                  <MessageCircle size={16} style={{marginRight: '8px'}} /> WhatsApp
+                </button>
+              </div>
+
+              {inputType === 'url' ? (
+                <>
+                  <label><LinkIcon size={16} style={{display:'inline', marginRight:'8px'}}/> Destination URL</label>
+                  <input 
+                    type="text" 
+                    value={url} 
+                    onChange={(e) => setUrl(e.target.value)} 
+                    placeholder="https://"
+                  />
+                </>
+              ) : (
+                <>
+                  <label>
+                    {inputType === 'whatsapp' ? <MessageCircle size={16} style={{display:'inline', marginRight:'8px'}}/> : <Phone size={16} style={{display:'inline', marginRight:'8px'}}/>} 
+                    Phone Number (+91 India Only)
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <span style={{ padding: '0.75rem', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}>+91</span>
+                    <input 
+                      type="text" 
+                      value={phoneNumber} 
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        if (val.length <= 10) setPhoneNumber(val);
+                      }} 
+                      placeholder="Enter 10-digit number"
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                  {inputType === 'whatsapp' && phoneNumber.length === 10 && (
+                    <button 
+                      className="btn" 
+                      style={{ marginTop: '1rem', width: '100%', background: '#25D366', color: '#fff', border: 'none', gap: '8px' }}
+                      onClick={() => window.open(`https://wa.me/91${phoneNumber}`, '_blank')}
+                    >
+                      <MessageCircle size={20} />
+                      Test Link on WhatsApp
+                    </button>
+                  )}
+                </>
+              )}
             </div>
 
             <div className="input-group">
@@ -162,7 +226,11 @@ export default function Home() {
           <div className="qr-preview">
             <div ref={qrRef}>
               <QRCodeCanvas
-                value={url}
+                value={
+                  inputType === 'url' ? url :
+                  inputType === 'phone' ? `tel:+91${phoneNumber}` :
+                  `https://wa.me/91${phoneNumber}`
+                }
                 size={300}
                 bgColor={bgColor}
                 fgColor={fgColor}

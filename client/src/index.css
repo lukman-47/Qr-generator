@@ -177,6 +177,7 @@ input[type="file"]::file-selector-button:hover {
 .btn-secondary {
   background: transparent;
   border: 1px solid var(--border-color);
+  color: var(--text-main);
 }
 .btn-secondary:hover {
   background: rgba(255,255,255,0.05);
