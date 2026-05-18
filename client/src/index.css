@@ -501,6 +501,14 @@ body.light-mode .segmented-control {
   .glass-panel {
     padding: 1rem 0.75rem;
   }
+  .input-group,
+  .segmented-control,
+  .action-buttons-row {
+    width: 92% !important;
+    max-width: 290px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
   .color-picker-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
