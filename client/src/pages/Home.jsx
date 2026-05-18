@@ -16,6 +16,7 @@ import {
   UploadCloud, 
   X
 } from 'lucide-react';
+import personalQR from '../assets/personal-qr.png';
 
 const processImageToShape = (imageSrc, shape) => {
   return new Promise((resolve) => {
@@ -437,6 +438,26 @@ export default function Home() {
             </div>
             <p style={{ marginTop: '1.25rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem' }}>Live Preview</p>
           </div>
+        </div>
+      </div>
+
+      {/* Simple, Clean personal website QR code section */}
+      <div style={{ marginTop: '4rem', textAlign: 'center', width: '100%' }}>
+        <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontSize: '1.5rem' }}>
+          <ExternalLink size={24} color="var(--accent-color)" />
+          Visit My Website
+        </h2>
+        <div className="glass-panel" style={{ padding: '2rem', display: 'inline-block', maxWidth: '340px', width: '100%', margin: '0 auto' }}>
+          <div style={{ display: 'inline-flex', padding: '0.5rem', background: '#fff', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', marginBottom: '1rem' }}>
+            <img 
+              src={personalQR} 
+              alt="Shaikh Lukman Personal QR Code" 
+              style={{ width: '220px', height: '220px', borderRadius: '8px', display: 'block' }} 
+            />
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600, margin: 0 }}>
+            Scan the QR code above to visit my portfolio.
+          </p>
         </div>
       </div>
     </div>
