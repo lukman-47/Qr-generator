@@ -24,10 +24,10 @@ function App() {
 
   return (
     <Router>
-      <header className="container" style={{ padding: '2rem 2rem 0', display: 'flex', justifyContent: 'center' }}>
-        <img src={logo} alt="Shaikh Lukman Logo" style={{ height: '80px', width: 'auto' }} />
+      <header className="app-header">
+        <img src={logo} alt="Shaikh Lukman Logo" />
       </header>
-      <div className="nav" style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'flex-end', padding: '1rem 2rem', gap: '2rem', alignItems: 'center' }}>
+      <div className="navbar">
         <button 
           onClick={toggleTheme} 
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
@@ -45,8 +45,8 @@ function App() {
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
-      <footer className="container" style={{ textAlign: 'center', padding: '4rem 2rem 2rem', marginTop: 'auto' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+      <footer style={{ textAlign: 'center', padding: '4rem 1rem 2rem', marginTop: 'auto', width: '100%' }}>
+        <div className="glass-panel" style={{ padding: '1rem 1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
           <Copyright size={16} />
           <span>All rights reserved by Shaikh Lukman</span>
         </div>
