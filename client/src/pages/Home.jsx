@@ -14,11 +14,8 @@ import {
   Share2, 
   Copy, 
   UploadCloud, 
-  X, 
-  RefreshCw,
-  Check
+  X
 } from 'lucide-react';
-import personalQR from '../assets/personal-qr.png';
 
 const processImageToShape = (imageSrc, shape) => {
   return new Promise((resolve) => {
@@ -66,17 +63,10 @@ export default function Home() {
   
   // Custom Sharing States
   const [showShareDropdown, setShowShareDropdown] = useState(false);
-  const [showcaseShareDropdown, setShowcaseShareDropdown] = useState(false);
-  
-  // Showcase 2nd Image Uploader
-  const [showcaseImage, setShowcaseImage] = useState(localStorage.getItem('showcaseImage') || null);
-  const [showcaseFileName, setShowcaseFileName] = useState(localStorage.getItem('showcaseFileName') || '');
   
   const qrRef = useRef();
   const fileInputRef = useRef();
-  const showcaseInputRef = useRef();
   const mainShareContainerRef = useRef();
-  const showcaseShareContainerRef = useRef();
 
   useEffect(() => {
     axios.post('/api/analytics/visit').catch(err => console.log(err));
@@ -97,14 +87,11 @@ export default function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Close dropdowns if clicking outside
+  // Close dropdown if clicking outside
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (mainShareContainerRef.current && !mainShareContainerRef.current.contains(e.target)) {
         setShowShareDropdown(false);
-      }
-      if (showcaseShareContainerRef.current && !showcaseShareContainerRef.current.contains(e.target)) {
-        setShowcaseShareDropdown(false);
       }
     };
     document.addEventListener('click', handleOutsideClick);
@@ -237,85 +224,6 @@ export default function Home() {
       .catch(err => console.error(err));
   };
 
-  // Showcase 2nd Image Uploader Handlers
-  const handleShowcaseUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setShowcaseFileName(file.name);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setShowcaseImage(reader.result);
-        localStorage.setItem('showcaseImage', reader.result);
-        localStorage.setItem('showcaseFileName', file.name);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearShowcaseImage = () => {
-    setShowcaseImage(null);
-    setShowcaseFileName('');
-    localStorage.removeItem('showcaseImage');
-    localStorage.removeItem('showcaseFileName');
-    if (showcaseInputRef.current) showcaseInputRef.current.value = '';
-  };
-
-  const downloadShowcase = () => {
-    const link = document.createElement('a');
-    link.href = showcaseImage || personalQR;
-    link.download = showcaseFileName ? `showcase-${showcaseFileName}` : 'personal-qr.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Share Showcase 2nd Image
-  const shareShowcase = async (e) => {
-    e.stopPropagation();
-    const activeSrc = showcaseImage || personalQR;
-
-    try {
-      const response = await fetch(activeSrc);
-      const blob = await response.blob();
-      const file = new File([blob], showcaseFileName || 'showcase-card.png', { type: blob.type });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'Showcase QR Code',
-            text: 'Take a look at this digital card QR code!',
-          });
-          return;
-        } catch (err) {
-          if (err.name === 'AbortError') return;
-          console.error(err);
-        }
-      }
-    } catch (err) {
-      console.error('Fetch/Blob conversion failed:', err);
-    }
-
-    // Toggle Desktop / Fallback Dropdown
-    setShowcaseShareDropdown(prev => !prev);
-  };
-
-  const copyShowcaseToClipboard = async () => {
-    const activeSrc = showcaseImage || personalQR;
-    try {
-      const response = await fetch(activeSrc);
-      const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob })
-      ]);
-      alert('Showcase card image copied to clipboard!');
-      setShowcaseShareDropdown(false);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to copy showcase image to clipboard.');
-    }
-  };
-
   const shareTextLink = (network) => {
     const textUrl = getActiveDataValue();
     let shareUrl = '';
@@ -334,53 +242,34 @@ export default function Home() {
     }
   };
 
-  const shareShowcaseSocial = (network) => {
-    // Sharing showcase url
-    const textUrl = window.location.origin;
-    let shareUrl = '';
-    
-    if (network === 'whatsapp') {
-      shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent('Scan my custom showcase card QR: ' + textUrl)}`;
-    } else if (network === 'twitter') {
-      shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Scan my digital showcase card!')}&url=${encodeURIComponent(textUrl)}`;
-    }
-    
-    if (shareUrl) {
-      window.open(shareUrl, '_blank');
-      setShowcaseShareDropdown(false);
-    }
-  };
-
   return (
     <div className="container">
       <h1>QR Code Generator</h1>
       <p className="subtitle">Create custom, branded QR codes instantly.</p>
 
-      <div className="glass-panel" style={{ marginBottom: '4rem' }}>
+      <div className="glass-panel">
         <div className="generator-layout">
           <div className="customization-panel">
             <div className="input-group">
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              {/* Premium iOS/Android-style Segmented Control Selector */}
+              <div className="segmented-control">
                 <button 
-                  className={`btn ${inputType === 'url' ? '' : 'btn-secondary'}`} 
+                  className={`segmented-button ${inputType === 'url' ? 'active' : ''}`} 
                   onClick={() => setInputType('url')}
-                  style={{ flex: 1, padding: '0.5rem', minWidth: '80px' }}
                 >
-                  <LinkIcon size={16} style={{marginRight: '8px'}} /> URL
+                  <LinkIcon size={16} /> URL
                 </button>
                 <button 
-                  className={`btn ${inputType === 'phone' ? '' : 'btn-secondary'}`} 
+                  className={`segmented-button ${inputType === 'phone' ? 'active' : ''}`} 
                   onClick={() => setInputType('phone')}
-                  style={{ flex: 1, padding: '0.5rem', minWidth: '100px' }}
                 >
-                  <Phone size={16} style={{marginRight: '8px'}} /> Phone Call
+                  <Phone size={16} /> Phone
                 </button>
                 <button 
-                  className={`btn ${inputType === 'whatsapp' ? '' : 'btn-secondary'}`} 
+                  className={`segmented-button ${inputType === 'whatsapp' ? 'active' : ''}`} 
                   onClick={() => setInputType('whatsapp')}
-                  style={{ flex: 1, padding: '0.5rem', minWidth: '100px' }}
                 >
-                  <MessageCircle size={16} style={{marginRight: '8px'}} /> WhatsApp
+                  <MessageCircle size={16} /> WhatsApp
                 </button>
               </div>
 
@@ -494,7 +383,7 @@ export default function Home() {
               )}
             </div>
             
-            <div className="showcase-buttons-row" style={{ marginTop: '2.5rem' }}>
+            <div className="action-buttons-row" style={{ marginTop: '2.5rem' }}>
               <button className="btn" onClick={downloadQR} style={{ flex: 1 }}>
                 <Download size={20} />
                 Download PNG
@@ -547,80 +436,6 @@ export default function Home() {
               />
             </div>
             <p style={{ marginTop: '1.25rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem' }}>Live Preview</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Showcase / 2nd Image Showcase Card */}
-      <div className="showcase-card">
-        <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
-          <ExternalLink size={24} color="var(--accent-color)" />
-          {showcaseImage ? 'My Custom Showcase' : 'Visit My Website'}
-        </h2>
-        <div className="glass-panel" style={{ padding: '2rem' }}>
-          <div className="showcase-preview-container">
-            <img 
-              src={showcaseImage || personalQR} 
-              alt={showcaseImage ? 'Custom Uploaded Showcase' : 'Shaikh Lukman Personal QR Code'} 
-            />
-          </div>
-          
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-            {showcaseImage ? `Custom card: ${showcaseFileName}` : 'Scan the QR code above to visit my portfolio.'}
-          </p>
-
-          <div className="showcase-actions">
-            {/* Dynamic File Uploader for 2nd Image */}
-            <div className="file-upload-wrapper" style={{ maxWidth: '400px', margin: '0 auto' }}>
-              <label className="file-upload-button" style={{ borderStyle: 'solid', borderColor: showcaseImage ? 'var(--border-color)' : 'var(--accent-color)' }}>
-                <UploadCloud size={18} />
-                <span>{showcaseImage ? 'Change 2nd Image / QR' : 'Upload 2nd Image / QR'}</span>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  ref={showcaseInputRef}
-                  onChange={handleShowcaseUpload} 
-                  className="file-upload-input"
-                />
-              </label>
-            </div>
-
-            <div className="showcase-buttons-row" style={{ maxWidth: '400px', margin: '0.5rem auto 0', display: 'flex', gap: '0.5rem', width: '100%' }}>
-              <button className="btn btn-secondary" onClick={downloadShowcase} style={{ flex: 1, padding: '0.75rem' }}>
-                <Download size={16} /> Download
-              </button>
-              
-              <div className="share-action-container" ref={showcaseShareContainerRef} style={{ flex: 1, marginTop: 0 }}>
-                <button className="btn btn-secondary" onClick={shareShowcase} style={{ width: '100%', padding: '0.75rem' }}>
-                  <Share2 size={16} /> Share
-                </button>
-                
-                {showcaseShareDropdown && (
-                  <div className="share-dropdown">
-                    <button className="share-item" onClick={copyShowcaseToClipboard}>
-                      <Copy size={14} /> Copy Image
-                    </button>
-                    <button className="share-item" onClick={() => shareShowcaseSocial('whatsapp')}>
-                      <MessageCircle size={14} /> WhatsApp Text Link
-                    </button>
-                    <button className="share-item" onClick={() => shareShowcaseSocial('twitter')}>
-                      <ExternalLink size={14} /> Twitter Text Link
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {showcaseImage && (
-              <button 
-                className="btn btn-secondary" 
-                onClick={clearShowcaseImage}
-                style={{ maxWidth: '400px', margin: '0.5rem auto 0', borderColor: 'rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '0.75rem', gap: '6px' }}
-              >
-                <RefreshCw size={16} />
-                Revert to Default Personal QR
-              </button>
-            )}
           </div>
         </div>
       </div>

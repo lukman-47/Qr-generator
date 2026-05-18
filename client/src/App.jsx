@@ -35,10 +35,6 @@ function App() {
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-        <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 600 }}>
-          <Shield size={18} />
-          <span>Admin Area</span>
-        </Link>
       </div>
       <Routes>
         <Route path="/" element={<Home />} />
