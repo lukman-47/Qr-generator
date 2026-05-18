@@ -502,28 +502,39 @@ body.light-mode .segmented-control {
     padding: 1.25rem 0.85rem;
   }
   
-  /* Form components centering and unified sizing */
-  .segmented-control,
-  .action-buttons-row,
-  .color-picker-grid,
-  .file-upload-wrapper,
-  .phone-input-container,
-  .input-group input[type="text"],
-  .input-group .btn {
+  /* Enforce perfect unified column width and centering on all main blocks */
+  .input-group,
+  .action-buttons-row {
     width: 95% !important;
     max-width: 310px !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 
-  /* Labels alignment in the centralized column */
+  /* Make sure children of the centered input groups stretch to full width */
+  .input-group input[type="text"],
+  .segmented-control,
+  .color-picker-grid,
+  .file-upload-wrapper,
+  .phone-input-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
   .input-group label {
     display: block;
-    width: 95% !important;
-    max-width: 310px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     margin-bottom: 0.5rem !important;
+  }
+
+  /* Make the segmented control track span full width of the centered input group */
+  .segmented-control {
+    margin-bottom: 1.5rem !important;
   }
 
   .color-picker-grid {
