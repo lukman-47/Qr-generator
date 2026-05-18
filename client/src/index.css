@@ -499,7 +499,7 @@ body.light-mode .segmented-control {
 
 @media (max-width: 480px) {
   .glass-panel {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.75rem;
   }
   .color-picker-grid {
     grid-template-columns: 1fr;
@@ -513,5 +513,13 @@ body.light-mode .segmented-control {
     font-size: 0.8rem;
     padding: 0.55rem 0.25rem;
     gap: 0.25rem;
+  }
+  footer .glass-panel {
+    font-size: 0.8rem !important;
+    padding: 0.75rem 1rem !important;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
   }
 }
