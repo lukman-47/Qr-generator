@@ -290,7 +290,7 @@ export default function Home() {
                     {inputType === 'whatsapp' ? <MessageCircle size={16} style={{display:'inline', marginRight:'8px'}}/> : <Phone size={16} style={{display:'inline', marginRight:'8px'}}/>} 
                     Phone Number (+91 India Only)
                   </label>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div className="phone-input-container" style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
                     <span style={{ padding: '0.75rem', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}>+91</span>
                     <input 
                       type="text" 
